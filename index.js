@@ -46,7 +46,12 @@ module.exports = async (body, opts = {}) => {
   let rect = {}
   if (!opts.width && !opts.height) {
     const bodyEl = await page.$('body')
-    rect = await bodyEl.boxModel()
+    for (;;) {
+      rect = await bodyEl.boxModel()
+      if (rect.height == 0) {
+        await new Promise(done => setTimeout(done, 1000))
+      } else break
+    }
   }
   const width = parseInt(opts.width || rect.width)
   const height = parseInt(opts.height || rect.height)
